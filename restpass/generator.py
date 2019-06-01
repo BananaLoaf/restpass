@@ -39,7 +39,7 @@ class Generator:
         for letter_index in range(length):
             # Generate random index for each position and fetch char from alphabet
             seed = Seed(self._source.encode("utf-8"),
-                        self._alphabet.encode("utf-8"),  # "".join(sorted(self._alphabet)).encode("utf-8"),
+                        self._alphabet.encode("utf-8"),  # "".join(sorted(self._alphabet)).encode("utf-8") TODO for v1.1
                         str(length).encode("utf-8"),
                         str(letter_index).encode("utf-8"),
                         *self._salt)  # hashlib.sha256 by default

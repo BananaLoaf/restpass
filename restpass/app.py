@@ -9,28 +9,39 @@ import time
 MAX_CHARS = 30
 
 
-class CopyButton(npyscreen.ButtonPress):
-    parent_app = None
+def copy_button(parent_app):
+    class CopyButton(npyscreen.ButtonPress):
+        def __init__(self, *args, **keywords):
+            super().__init__(*args, **keywords)
 
-    def __init__(self, *args, **keywords):
-        super().__init__(*args, **keywords)
+            self.parent_app = parent_app
 
-    @classmethod
-    def get(cls, parent_app):
-        cls.parent_app = parent_app
-        return cls
+        def whenPressed(self):
+            if self.parent_app.output_raw:
+                pyperclip.copy(self.parent_app.output_raw)
+                self.parent_app.output_raw = ""
 
-    def whenPressed(self):
-        if self.parent_app.output_raw:
-            pyperclip.copy(self.parent_app.output_raw)
-            self.parent_app.output_raw = ""
+                self.parent_app.input_entry.set_value("")
+                self.parent_app.salt_entry.set_value("")
+                self.parent_app.length_slider.set_value(3)
 
-            self.parent_app.input_entry.set_value("")
-            self.parent_app.salt_entry.set_value("")
-            self.parent_app.length_slider.set_value(3)
+                self.parent_app.rules_select.set_value([0, 1, 2])
+                self.parent_app.custom_alphabet_entry.set_value("")
 
-            self.parent_app.rules_select.set_value([0, 1, 2])
-            self.parent_app.custom_alphabet_entry.set_value("")
+    return CopyButton
+
+
+def paste_button(destination):
+    class PasteButton(npyscreen.ButtonPress):
+        def __init__(self, *args, **keywords):
+            super().__init__(*args, **keywords)
+
+            self.destination = destination
+
+        def whenPressed(self):
+            self.destination.set_value(pyperclip.paste())
+
+    return PasteButton
 
 
 class RestpassApp(npyscreen.NPSAppManaged):
@@ -44,7 +55,9 @@ class RestpassApp(npyscreen.NPSAppManaged):
 
         self.length_slider = None
         self.input_entry = None
+        self.input_paste_button = None
         self.salt_entry = None
+        self.salt_paste_button = None
 
         self.rules_select = None
         self.custom_alphabet_entry = None
@@ -62,16 +75,18 @@ class RestpassApp(npyscreen.NPSAppManaged):
         self.separator()
 
         self.length_slider = self.form.add(npyscreen.TitleSlider, value=8, lowest=3, out_of=MAX_CHARS, name="Length:")
-        self.input_entry = self.form.add(npyscreen.TitleText, name="Input:")
-        self.salt_entry = self.form.add(npyscreen.TitleText, name="Salt:")
+        self.input_entry = self.form.add(npyscreen.TitlePassword, name="Input:")
+        self.input_paste_button = self.form.add(paste_button(destination=self.input_entry), name="Paste from clipboard")
+        self.salt_entry = self.form.add(npyscreen.TitlePassword, name="Salt:")
+        self.salt_paste_button = self.form.add(paste_button(destination=self.salt_entry), name="Paste from clipboard")
         self.separator()
 
         self.rules_select = self.form.add(npyscreen.TitleMultiSelect, max_height=4, value=[0, 1, 2], name="Rules:", values=["Digits", "Lowercase", "Uppercase", "Symbols"], scroll_exit=True)
-        self.custom_alphabet_entry = self.form.add(npyscreen.TitleText, name="Custom alphabet:", )
+        self.custom_alphabet_entry = self.form.add(npyscreen.TitleText, name="Custom alphabet:")
         self.separator()
 
         self.output_title = self.form.add(npyscreen.TitleFixedText, name="Output:")
-        self.copy_button = self.form.add(CopyButton.get(parent_app=self), name="Copy to clipboard")
+        self.copy_button = self.form.add(copy_button(parent_app=self), name="Copy to clipboard")
 
     def separator(self):
         self.form.add(npyscreen.FixedText, value="––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––")
