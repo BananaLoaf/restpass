@@ -1,0 +1,10 @@
+
+\.idea/
+
+dist/
+
+build/
+
+restpass\.egg-info/
+
+restpass/__pycache__/

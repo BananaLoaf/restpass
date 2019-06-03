@@ -1,0 +1,3 @@
+seedrandom==1.4.1
+npyscreen
+pyperclip
