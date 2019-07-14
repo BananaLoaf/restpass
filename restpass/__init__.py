@@ -1,8 +1,8 @@
 PAYLOAD = {
     "name": "restpass",
-    "version": "1.1",
+    "version": "1.1.1",
     "install_requires": ["seedrandom==1.4.1", "npyscreen", "pyperclip"],
-    "packages": ("restpass", ),  # Better to be done by hand
+    "packages": ("restpass", ),
     "entry_points": {
         "console_scripts": [
             "restpass = restpass.main:main"
@@ -20,7 +20,9 @@ PAYLOAD = {
     "long_description": None,
     "long_description_content_type": "text/markdown",
     "keywords": ["generator", "password", "passphrase", "hash", "restore"],
-    "data_files": None,
+    "data_files": [
+        ("share/applications", ["misc/restpass.desktop", ])
+    ],
 
     "url": "https://github.com/BananaLoaf/restpass",
     "classifiers": [
@@ -29,7 +31,9 @@ PAYLOAD = {
         "Environment :: Console :: Curses",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Operating System :: OS Independent",
+        "Operating System :: MacOS",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Topic :: Security",
