@@ -6,6 +6,7 @@ from threading import Thread
 import time
 
 
+KILL = False
 MAX_CHARS = 30
 
 
@@ -89,13 +90,19 @@ class RestpassApp(npyscreen.NPSAppManaged):
     def separator(self):
         self.form.add(npyscreen.FixedText, value="––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––")
 
-    def main(self):  # TODO fix terminal crippling after shutdown
-        self.init_widgets()
-        Thread(target=self.update).start()
-        self.form.edit()
+    def main(self):
+        thread = Thread(target=self.update)
+        try:
+            self.init_widgets()
+            thread.start()
+            self.form.edit()
+        except KeyboardInterrupt:
+            KILL = True
+            thread.join()  # Wait for thread to shutdown JIC
+            self.form.exit_editing()
 
     def update(self, delay=0.1):
-        while True:
+        while not KILL:
             if self.input_entry.get_value():
                 generator = Generator(source=self.input_entry.get_value())
                 if self.salt_entry.get_value():
