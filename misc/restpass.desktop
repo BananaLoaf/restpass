@@ -5,4 +5,4 @@ Comment=Terminal based graphical utility for generating restorable passwords
 Icon=terminal
 Terminal=true
 Exec=restpass
-Categories=ConsoleOnly;Utility;
+Categories=ConsoleOnly;Utility;Security;
