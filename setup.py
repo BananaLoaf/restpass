@@ -12,7 +12,7 @@ with open("README.md", "r") as file:
 description = "Terminal based graphical utility for generating restorable passwords"
 assert description == LONG_DESCRIPTION.split("\n")[1]
 
-PAYLOAD["description"] = LONG_DESCRIPTION.split("\n")[1]
+PAYLOAD["description"] = description
 PAYLOAD["long_description"] = LONG_DESCRIPTION
 
 if platform.system() == "Linux":

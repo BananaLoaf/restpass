@@ -1,10 +1,11 @@
-import npyscreen
-import pyperclip
-from restpass.generator import Generator
-from restpass import PAYLOAD
 from threading import Thread
 import time
 
+import npyscreen
+import pyperclip
+
+from restpass import PAYLOAD
+from restpass.generator import Generator
 
 MAX_CHARS = 30
 
