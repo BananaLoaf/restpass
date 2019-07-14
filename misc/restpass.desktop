@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=restpass
+Comment=Terminal based graphical utility for generating restorable passwords
+Icon=terminal
+Terminal=true
+Exec=restpass
+Categories=ConsoleOnly;Utility;Security;

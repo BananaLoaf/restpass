@@ -1,10 +1,11 @@
-import npyscreen
-import pyperclip
-from restpass.generator import Generator
-from restpass import NAME, VERSION
 from threading import Thread
 import time
 
+import npyscreen
+import pyperclip
+
+from restpass import PAYLOAD
+from restpass.generator import Generator
 
 MAX_CHARS = 30
 
@@ -47,6 +48,7 @@ def paste_button(destination):
 class RestpassApp(npyscreen.NPSAppManaged):
     def __init__(self):
         super().__init__()
+        self.KILL = False
 
         self.form = None
 
@@ -60,7 +62,6 @@ class RestpassApp(npyscreen.NPSAppManaged):
         self.salt_paste_button = None
 
         self.rules_select = None
-        self.custom_alphabet_entry = None
 
         self.output_title = None
         self.copy_button = None
@@ -68,7 +69,7 @@ class RestpassApp(npyscreen.NPSAppManaged):
         self.output_raw = None
 
     def init_widgets(self):
-        self.form = npyscreen.Form(name=f"{NAME}-v{VERSION}")
+        self.form = npyscreen.Form(name=f"{PAYLOAD['name']}-v{PAYLOAD['version']}")
 
         self.hide_output_checkbox = self.form.add(npyscreen.Checkbox, name="Hide output", value=False)
         self.show_length_slider = self.form.add(npyscreen.TitleSlider, out_of=MAX_CHARS, name="Show length:")
@@ -82,7 +83,6 @@ class RestpassApp(npyscreen.NPSAppManaged):
         self.separator()
 
         self.rules_select = self.form.add(npyscreen.TitleMultiSelect, max_height=4, value=[0, 1, 2], name="Rules:", values=["Digits", "Lowercase", "Uppercase", "Symbols"], scroll_exit=True)
-        self.custom_alphabet_entry = self.form.add(npyscreen.TitleText, name="Custom alphabet:")
         self.separator()
 
         self.output_title = self.form.add(npyscreen.TitleFixedText, name="Output:")
@@ -92,49 +92,44 @@ class RestpassApp(npyscreen.NPSAppManaged):
         self.form.add(npyscreen.FixedText, value="––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––")
 
     def main(self):
-        self.init_widgets()
-        Thread(target=self.update).start()
-        self.form.edit()
+        thread = Thread(target=self.update)
+        try:
+            self.init_widgets()
+            thread.start()
+            self.form.edit()
+        except KeyboardInterrupt:
+            self.KILL = True
+            thread.join()  # Wait for thread to shutdown JIC
+            self.form.exit_editing()
 
     def update(self, delay=0.1):
-        while True:
+        while not self.KILL:
             if self.input_entry.get_value():
                 generator = Generator(source=self.input_entry.get_value())
                 if self.salt_entry.get_value():
                     generator.set_salt(self.salt_entry.get_value().encode("utf-8"))
 
-                if self.custom_alphabet_entry.get_value():
-                    generator.set_custom_alphabet(self.custom_alphabet_entry.get_value())
-                else:
-                    rules = self.rules_select.get_selected_objects()
-                    if rules:
-                        digits = True if "Digits" in rules else False
-                        lowercase = True if "Lowercase" in rules else False
-                        uppercase = True if "Uppercase" in rules else False
-                        symbols = True if "Symbols" in rules else False
+                rules = self.rules_select.get_selected_objects()
+                if rules:
+                    digits = True if "Digits" in rules else False
+                    lowercase = True if "Lowercase" in rules else False
+                    uppercase = True if "Uppercase" in rules else False
+                    symbols = True if "Symbols" in rules else False
 
-                        generator.set_rules(digits=digits, lowercase=lowercase, uppercase=uppercase, symbols=symbols)
+                    generator.set_rules(digits=digits, lowercase=lowercase, uppercase=uppercase, symbols=symbols)
 
-                        self.output_raw = generator.generate(length=int(self.length_slider.get_value()))
-                        if self.hide_output_checkbox.value:
-                            show_length = int(self.show_length_slider.get_value())
-                            output_str = self.output_raw[:show_length] + "*" * (len(self.output_raw) - show_length)
-                        else:
-                            output_str = self.output_raw
-
-                        self.output_title.set_value(output_str)
+                    self.output_raw = generator.generate(length=int(self.length_slider.get_value()))
+                    if self.hide_output_checkbox.value:
+                        show_length = int(self.show_length_slider.get_value())
+                        output_str = self.output_raw[:show_length] + "*" * (len(self.output_raw) - show_length)
                     else:
-                        self.output_title.set_value("")
+                        output_str = self.output_raw
+
+                    self.output_title.set_value(output_str)
+                else:
+                    self.output_title.set_value("")
             else:
                 self.output_title.set_value("")
 
             self.form.display()
             time.sleep(delay)
-
-
-def main():
-    RestpassApp().run()
-
-
-if __name__ == '__main__':
-    main()

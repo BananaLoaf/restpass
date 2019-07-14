@@ -21,9 +21,6 @@ class Generator:
         if symbols:
             self._alphabet += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 
-    def set_custom_alphabet(self, alphabet: str):
-        self._alphabet = alphabet
-
     def set_salt(self, *args):
         for arg in args:
             if not isinstance(arg, bytes):
@@ -39,7 +36,7 @@ class Generator:
         for letter_index in range(length):
             # Generate random index for each position and fetch char from alphabet
             seed = Seed(self._source.encode("utf-8"),
-                        self._alphabet.encode("utf-8"),  # "".join(sorted(self._alphabet)).encode("utf-8") TODO for v1.1
+                        self._alphabet.encode("utf-8"),  # "".join(sorted(self._alphabet)).encode("utf-8") TODO in some future version
                         str(length).encode("utf-8"),
                         str(letter_index).encode("utf-8"),
                         *self._salt)  # hashlib.sha256 by default
