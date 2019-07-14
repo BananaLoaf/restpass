@@ -6,7 +6,6 @@ from threading import Thread
 import time
 
 
-KILL = False
 MAX_CHARS = 30
 
 
@@ -48,6 +47,7 @@ def paste_button(destination):
 class RestpassApp(npyscreen.NPSAppManaged):
     def __init__(self):
         super().__init__()
+        self.KILL = False
 
         self.form = None
 
@@ -97,12 +97,12 @@ class RestpassApp(npyscreen.NPSAppManaged):
             thread.start()
             self.form.edit()
         except KeyboardInterrupt:
-            KILL = True
+            self.KILL = True
             thread.join()  # Wait for thread to shutdown JIC
             self.form.exit_editing()
 
     def update(self, delay=0.1):
-        while not KILL:
+        while not self.KILL:
             if self.input_entry.get_value():
                 generator = Generator(source=self.input_entry.get_value())
                 if self.salt_entry.get_value():
