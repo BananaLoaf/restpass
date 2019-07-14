@@ -21,9 +21,6 @@ class Generator:
         if symbols:
             self._alphabet += "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 
-    def set_custom_alphabet(self, alphabet: str):
-        self._alphabet = alphabet
-
     def set_salt(self, *args):
         for arg in args:
             if not isinstance(arg, bytes):
