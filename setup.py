@@ -2,7 +2,6 @@ try:
     from setuptools import setup
 except ModuleNotFoundError:
     from distutils.core import setup
-import platform
 
 from restpass import PAYLOAD
 
@@ -14,11 +13,6 @@ assert description == LONG_DESCRIPTION.split("\n")[1]
 
 PAYLOAD["description"] = description
 PAYLOAD["long_description"] = LONG_DESCRIPTION
-
-if platform.system() == "Linux":
-    PAYLOAD["data_files"] = [
-        ("share/applications", ["misc/restpass.desktop", ])
-    ]
 
 
 kwargs = {}
