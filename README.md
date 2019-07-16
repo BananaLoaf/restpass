@@ -5,7 +5,7 @@ Terminal based graphical utility for generating restorable passwords
 ![GitHub Licence](https://img.shields.io/github/license/BananaLoaf/restpass.svg?color=blue&style=flat-square)
 ![Package Version](https://img.shields.io/pypi/v/restpass.svg?color=green&style=flat-square)
 
-![UI](misc/ui.png?raw=true)
+![Demo](misc/demo.gif)
 ```bash
 pip install restpass
 or
