@@ -25,9 +25,7 @@ def copy_button(parent_app):
                 self.parent_app.input_entry.set_value("")
                 self.parent_app.salt_entry.set_value("")
                 self.parent_app.length_slider.set_value(3)
-
                 self.parent_app.rules_select.set_value([0, 1, 2])
-                self.parent_app.custom_alphabet_entry.set_value("")
 
     return CopyButton
 
@@ -80,8 +78,6 @@ class RestpassApp(npyscreen.NPSAppManaged):
         self.input_paste_button = self.form.add(paste_button(destination=self.input_entry), name="Paste from clipboard")
         self.salt_entry = self.form.add(npyscreen.TitlePassword, name="Salt:")
         self.salt_paste_button = self.form.add(paste_button(destination=self.salt_entry), name="Paste from clipboard")
-        self.separator()
-
         self.rules_select = self.form.add(npyscreen.TitleMultiSelect, max_height=4, value=[0, 1, 2], name="Rules:", values=["Digits", "Lowercase", "Uppercase", "Symbols"], scroll_exit=True)
         self.separator()
 
