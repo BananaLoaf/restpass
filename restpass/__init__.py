@@ -1,6 +1,6 @@
 PAYLOAD = {
     "name": "restpass",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "install_requires": ["seedrandom==1.4.1", "npyscreen", "pyperclip"],
     "packages": ("restpass", ),
     "entry_points": {
