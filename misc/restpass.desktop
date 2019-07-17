@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=restpass
+Name=Restpass
 Comment=Terminal based graphical utility for generating restorable passwords
 Icon=terminal
 Terminal=true
