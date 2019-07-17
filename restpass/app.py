@@ -15,17 +15,12 @@ def copy_button(parent_app):
         def __init__(self, *args, **keywords):
             super().__init__(*args, **keywords)
 
-            self.parent_app = parent_app
-
         def whenPressed(self):
-            if self.parent_app.output_raw:
-                pyperclip.copy(self.parent_app.output_raw)
-                self.parent_app.output_raw = ""
+            if parent_app.output_raw:
+                pyperclip.copy(parent_app.output_raw)
+                parent_app.output_raw = ""
 
-                self.parent_app.input_entry.set_value("")
-                self.parent_app.salt_entry.set_value("")
-                self.parent_app.length_slider.set_value(3)
-                self.parent_app.rules_select.set_value([0, 1, 2])
+                parent_app.reset_widgets()
 
     return CopyButton
 
@@ -35,10 +30,8 @@ def paste_button(destination):
         def __init__(self, *args, **keywords):
             super().__init__(*args, **keywords)
 
-            self.destination = destination
-
         def whenPressed(self):
-            self.destination.set_value(pyperclip.paste())
+            destination.set_value(pyperclip.paste())
 
     return PasteButton
 
@@ -59,7 +52,7 @@ class RestpassApp(npyscreen.NPSAppManaged):
         self.salt_entry = None
         self.salt_paste_button = None
 
-        self.rules_select = None
+        self.alphabet_select = None
 
         self.output_title = None
         self.copy_button = None
@@ -75,14 +68,20 @@ class RestpassApp(npyscreen.NPSAppManaged):
 
         self.length_slider = self.form.add(npyscreen.TitleSlider, value=8, lowest=3, out_of=MAX_CHARS, name="Length:")
         self.input_entry = self.form.add(npyscreen.TitlePassword, name="Input:")
-        self.input_paste_button = self.form.add(paste_button(destination=self.input_entry), name="Paste from clipboard")
+        self.input_paste_button = self.form.add(paste_button(destination=self.input_entry), name="Paste")
         self.salt_entry = self.form.add(npyscreen.TitlePassword, name="Salt:")
-        self.salt_paste_button = self.form.add(paste_button(destination=self.salt_entry), name="Paste from clipboard")
-        self.rules_select = self.form.add(npyscreen.TitleMultiSelect, max_height=4, value=[0, 1, 2], name="Rules:", values=["Digits", "Lowercase", "Uppercase", "Symbols"], scroll_exit=True)
+        self.salt_paste_button = self.form.add(paste_button(destination=self.salt_entry), name="Paste")
+        self.alphabet_select = self.form.add(npyscreen.TitleMultiSelect, max_height=4, value=[0, 1, 2], name="Alphabet:", values=["Digits", "Lowercase", "Uppercase", "Symbols"], scroll_exit=True)
         self.separator()
 
         self.output_title = self.form.add(npyscreen.TitleFixedText, name="Output:")
-        self.copy_button = self.form.add(copy_button(parent_app=self), name="Copy to clipboard")
+        self.copy_button = self.form.add(copy_button(parent_app=self), name="Copy")
+
+    def reset_widgets(self):
+        self.input_entry.set_value("")
+        self.salt_entry.set_value("")
+        self.length_slider.set_value(3)
+        self.alphabet_select.set_value([0, 1, 2])
 
     def separator(self):
         self.form.add(npyscreen.FixedText, value="––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––")
@@ -105,12 +104,12 @@ class RestpassApp(npyscreen.NPSAppManaged):
                 if self.salt_entry.get_value():
                     generator.set_salt(self.salt_entry.get_value().encode("utf-8"))
 
-                rules = self.rules_select.get_selected_objects()
-                if rules:
-                    digits = True if "Digits" in rules else False
-                    lowercase = True if "Lowercase" in rules else False
-                    uppercase = True if "Uppercase" in rules else False
-                    symbols = True if "Symbols" in rules else False
+                alphabet = self.alphabet_select.get_selected_objects()
+                if alphabet:
+                    digits = True if "Digits" in alphabet else False
+                    lowercase = True if "Lowercase" in alphabet else False
+                    uppercase = True if "Uppercase" in alphabet else False
+                    symbols = True if "Symbols" in alphabet else False
 
                     generator.set_rules(digits=digits, lowercase=lowercase, uppercase=uppercase, symbols=symbols)
 
