@@ -2,7 +2,8 @@
 Type=Application
 Name=Restpass
 Comment=Terminal based graphical utility for generating restorable passwords
-Icon=terminal
+Icon=1password
 Terminal=true
 Exec=restpass
+Keywords=security;password;
 Categories=ConsoleOnly;Utility;Security;
